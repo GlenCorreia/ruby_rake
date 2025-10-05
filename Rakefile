@@ -1,25 +1,31 @@
-task :wash_hands => [:wet, :soap, :wash, :rinse, :dry] do 
-  puts "Task is done your hands are clean"
-end
+require 'rake'
+require 'date'
 
-task :wet do 
-  puts "Wet your hands"
-end
+desc 'generates a new post'
+task :new_post, [:title] do |t, args|
+  date = Time.now
 
-task :soap do 
-  puts "Soap your hands"
-end
+  if args[:title].nil?
+    puts "Please enter a title:"
+    title = STDIN.gets.chomp
+  else
+    title = args[:title]
+  end
+  formatted_title = title.downcase.split(" ").join("-")
 
-task :wash do 
-  puts "Wash your hands"
-end
+  post_title = "#{date.strftime('%Y-%m-%d')}-#{formatted_title}.markdown"
+  contents = <<-STR 
+---
+layout: post
+title: "#{title}"
+date: #{date.to_s} 
+comments: true
+categories: 
+---
+  STR
 
-task :rinse do 
-  puts "Rinse your hands"
+  File.open("_posts/#{post_title}", "w") do |f|
+    f.write(contents)
+  end
+  puts "New post: #{title} generated"
 end
-
-task :dry do 
-  puts "Dry your hands"
-end
-
-# run $ rake wash_hands
